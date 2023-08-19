@@ -22,7 +22,7 @@ function ProjectForm({ handleSubmit, btnText, projectData }) {
         let data = getInformation("http://localhost:5000/categories")
         data.then((value) => {
             setCategories(value)
-        })
+        });
 
     }, []);
 
