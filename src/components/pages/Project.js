@@ -16,8 +16,8 @@ function Project() {
 
 
     const [project, setProject] = useState([]);
-    const [service, setService] = useState({});
-    
+    const [services, setServices] = useState([]);
+
     const [showProjectForm, setShowProjectForm] = useState(false);
     const [showServiceForm, setShowServiceForm] = useState(false);
     const [message, setMessage] = useState();
@@ -33,7 +33,7 @@ function Project() {
             .then(data => {
                 console.log(data)
                 setProject(data);
-                setService(data.services);
+                setServices(data.services);
             })
             .catch(err => console.log(err))
     }, [id])
@@ -72,11 +72,33 @@ function Project() {
         setShowServiceForm(!showServiceForm);
     }
 
-    function removeService(){
+    function removeService(id, cost){
+        const servicesUpdate = project.services.filter((service) => {
+            return service.id !== id;
+        })
+
+        const projectUpdated = project;
+        projectUpdated.services = servicesUpdate;
+        projectUpdated.cost = parseFloat(projectUpdated.cost) - parseFloat(cost);
+        fetch(`http://localhost:5000/projects/${project.id}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type' : 'application/json'
+            },
+            body: JSON.stringify(projectUpdated)
+        }).then(resp => resp.json())
+        .then(data => {
+            setProject(projectUpdated);
+            setServices(servicesUpdate);
+            setMessage('Serviço removido com sucesso!');
+            setType('success');
+        })
+        .catch(err => {console.log(err)})
 
     }
 
     function createService(project){
+        setMessage('');
 
         const lastService = project.services[project.services.length - 1];
 
@@ -94,7 +116,7 @@ function Project() {
 
         project.cost = newCost;
 
-        fetch(`http:localhost:5000/projects/${project.id}`, {
+        fetch(`http://localhost:5000/projects/${project.id}`, {
             method: "PATCH",
             headers: {
                 'Content-Type' : 'application/json'
@@ -103,6 +125,7 @@ function Project() {
         }).then(resp => resp.json())
         .then(data => {
             console.log(data)
+            setShowServiceForm(false);
         }).catch(err => console.log(err))
     }
 
@@ -127,7 +150,7 @@ function Project() {
                                         <span>Total de Orçamento </span> R${project.budget}
                                     </p>
                                     <p>
-                                        <span>Categoria: </span> {project.cost}
+                                        <span>Custo: </span> {project.cost}
                                     </p>
                                 </div>
                             ) : (<div className={style.project_info}>
@@ -144,7 +167,7 @@ function Project() {
                                         <ServiceForm
                                             handleSubmit={createService}
                                             btnText="Adicionar Serviço"
-                                            projectData={project}  
+                                            projectData={project}
                                             />
                                 )}
                             </div>
@@ -152,8 +175,8 @@ function Project() {
                         <h2>Serviços</h2>
                         <Container customClass='start'>
                             {services.length > 0 && (
-                                services.map((service) => {
-                                    <ServiceCard 
+                                services.map((service) => (
+                                    <ServiceCard
                                     id={service.id}
                                     name={service.name}
                                     cost={service.cost}
@@ -161,7 +184,7 @@ function Project() {
                                     key={service.id}
                                     handleRemove={removeService}
                                     />
-                                })
+                                ))
                             )}
                             {services.length === 0 && <p>Não há serviços adicionados</p>}
                         </Container>

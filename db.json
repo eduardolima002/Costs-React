@@ -1,26 +1,15 @@
 {
   "projects": [
     {
-      "name": "Eduardocx\\",
-      "budget": "2123",
-      "category": {
-        "id": "4",
-        "name": "Planejamento"
-      },
-      "cost": 0,
-      "services": [],
-      "id": 1
-    },
-    {
-      "name": "dsadas",
-      "budget": "22",
+      "name": "Eduardo",
+      "budget": "2032",
       "category": {
         "id": "2",
         "name": "Desenvolvimento"
       },
       "cost": 0,
       "services": [],
-      "id": 2
+      "id": 1
     }
   ],
   "categories": [
